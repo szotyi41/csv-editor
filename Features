@@ -1,0 +1,46 @@
+http://www.expertm.hu/
+
+
+Where
+includes
+notincludes
+equal
+notequal
+larger than
+smaller than
+
+Where contains
+Remove row where
+Rename columns
+Duplicate columns
+
+String
+Összefűzés oszlopból
+Beillesztés ide (pl első space után, x karakter után)
+Replace (Case sensitive, Egyik oszlop értékéről, Másik oszlop értékére)
+Prefix, suffix
+Ha x oszlop értéke y akkor z oszlop értéke v
+
+Math
+Recognize number
+Add two columns
+Mindhez (műveletek)
+Maximum, minimum
+Format (Currency, round)
+Mértékegységátváltó (Weight, Currency)
+
+
+Date
+Maxium, minimum
+Format
++- x days
+
+
+Url
+Https
+Host csere
+Url checker
+
+Feature ideas
+Üres, invalid mező
+Eltérő ár
