@@ -7,7 +7,7 @@ $start = microtime(true);
 require_once 'vendor/autoload.php';
 
 
-$data = (new Data('adm_feed.csv'))->import();
+$data = (new Data('full.csv'))->import();
 
 echo 'Started rows: ' . $data->getCount() . '<br>';
 
