@@ -38,11 +38,10 @@ class Condition {
 
     public function cond($or, $condition) {
         if ($or === true) {
-            $this->result = $this->result || $condition;
-        } else {
-            $this->result = $this->result && $condition;
+            return $this->result = $this->result || $condition;
         }
-        return $this->result;
+            
+        return $this->result = $this->result && $condition;
     }
 
     private function toNumber($value) {
