@@ -20,7 +20,7 @@ class Explode extends Query
 	public function explode(string $delimiter) {
         $this->result = [];
         $this->delimiter = $delimiter;
-        $this->log('Run exploding with delimiter: ' . $delimiter);
+        $this->log('Exploding with delimiter: ' . $delimiter);
 
         $this->exec(function($row) {
             $exploded = explode($this->delimiter, $row[$this->getfield]);
@@ -29,7 +29,7 @@ class Explode extends Query
             }
             return $row;
         });
-        
+
         $this->data->setData($this->result);
         
         return $this;
