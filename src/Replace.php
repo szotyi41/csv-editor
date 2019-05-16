@@ -19,8 +19,7 @@ class Replace extends Query
         $this->from = $from;
         $this->to = $to;
         $this->params = $params;
-
-        echo 'Replacing<br>';
+        $this->log('Replacing');
 
         $this->exec(function($row) {
             $row[$this->setfield] = str_replace($this->from, vsprintf($this->to, $this->getparams($row)), $row[$this->getfield]);
@@ -37,15 +36,13 @@ class Replace extends Query
         $this->result = [];
         $this->to = $to;
         $this->params = $params;
-
-        echo 'Set fields<br>';
+        $this->log('Set fields');
 
         $this->exec(function($row) {
             $row[$this->setfield] = vsprintf($this->to, $this->getparams($row));
             return $row;
         });
         
-		
         $this->data->setData($this->result);
         
         return $this;
@@ -56,8 +53,7 @@ class Replace extends Query
         $this->result = [];
         $this->from = $from;
         $this->to = $to;
-
-        echo 'Run substr<br>';
+        $this->log('Run substr');
 
         $this->exec(function($row) {
             $row[$this->setfield] = substr($row[$this->getfield], $this->from, $this->to);

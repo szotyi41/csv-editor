@@ -21,16 +21,18 @@ class Math extends Query
         $this->result = [];
         $this->equation = $equation;
         $this->params = $params;
-        
-        echo 'Run math<br>';
+        $this->log('Run math');
+
 		$this->exec(function($row) {
-            $equation = vsprintf($this->equation, $this->getparams($row));
+            $equation = vsprintf($this->equation, $this->getParams($row));
             $equation = max(min(eval('return '.$equation.';'), $this->max), $this->min);
             $equation = number_format($equation, $this->decimals, $this->decimalpoint, $this->separator);
             $equation = $this->round === true ? round($equation, $this->roundprecision, $this->roundmode) : $equation;
             $row[$this->setfield] = $this->prefix . $equation . $this->suffix;
+            
             return $row;
-		});
+        });
+        
 		$this->data->setData($this->result);
     }
 
@@ -78,7 +80,7 @@ class Math extends Query
         return (float) preg_replace('/[^0-9.]/', '', $value);
     }
 
-    private function getparams($row) {
+    private function getParams($row) {
         $params = [];
         foreach ($this->params as $param) {
             if (is_numeric($param)) {

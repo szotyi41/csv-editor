@@ -18,12 +18,20 @@ class DateFormat extends Query
 	public function date(string $datestring) {
         $this->result = [];
         $this->datestring = $datestring;
-        echo 'Run date<br>';
+        $this->log('Run date');
+
         $this->exec(function($row) {
-            $date = $this->isDate($row[$this->getfield]) ? date($this->format, strtotime($row[$this->getfield].$this->datestring)) : date($this->format, strtotime($this->datestring));
+
+            if ($this->isDate($row[$this->getfield])) {
+                $date = date($this->format, strtotime($row[$this->getfield] . $this->datestring));
+            } else {
+                $date = date($this->format, strtotime($this->datestring));
+            }
+
             $row[$this->setfield] = $date;
             return $row;
         });
+
         $this->data->setData($this->result);
         
         return $this;

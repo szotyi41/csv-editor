@@ -10,9 +10,9 @@ class Remove extends Query
 
     public function remove() {        
         $this->result = [];
-
-        echo 'Removing<br>';
-        $this->exec(function($row) {
+        $this->log('Removing');
+        
+        $this->exec(function() {
             return [];
         });
 		

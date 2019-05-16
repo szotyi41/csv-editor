@@ -45,27 +45,19 @@ $times = (new Math($data))
 
 
 $rep2 = (new Replace($data))
-
     ->getColumn(4)
-
     ->where(4, 'contains', 'SANS')
-
     ->setColumn(4)
-
     ->replace('SANS', 'EXEC %s', [0]);
 
 
 $rep3 = (new Replace($data))
-
     ->setColumn(9)
-
     ->set('%s Üres %s', [1, 'csicska']);
 
 $remove = (new Remove($data))
     ->where(4, 'equal', 'ARTENGO')
-
     ->orWhere(4, 'equal', 'KIPSTA')
-
     ->remove();
 
 
@@ -81,7 +73,7 @@ $explode = (new Explode($data))
 
 $date = (new DateFormat($data))
     ->getColumn(8)
-    ->setColumn(13)
+    ->setColumn(0)
     ->format('Y. m. d.')
     ->date('+ 1 days');
 

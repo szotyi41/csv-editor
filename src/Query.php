@@ -43,7 +43,7 @@ abstract class Query {
         return $this;
     }
 
-    public function exec($callback) {
+    protected function exec($callback) {
         $count = 0;
         foreach ($this->data->getData() as $row) {
 
@@ -58,13 +58,17 @@ abstract class Query {
                 $count++;
             }
 
-            if (!empty($row)) {
+            if (empty($row) === false) {
                 $this->result[] = $row;
             }
         }
 
         $this->logResults($count);
 
+    }
+
+    protected function log($text) {
+        echo $text . '<br>';
     }
 
     private function logResults($count) {
