@@ -1,0 +1,17 @@
+{
+    "name": "macbook/feededitor",
+    "authors": [
+        {
+            "name": "Buza Péter",
+            "email": "szotyi41@yahoo.com"
+        }
+    ],
+    "require": {
+},
+"autoload": {
+    "psr-4": {
+        "": "src/"
+    }
+}
+
+}

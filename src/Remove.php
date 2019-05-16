@@ -11,11 +11,14 @@ class Remove extends Query
     public function remove() {        
         $this->result = [];
 
+        echo 'Removing<br>';
         $this->exec(function($row) {
             return [];
         });
 		
-		$this->data->setData($this->result);
+        $this->data->setData($this->result);
+
+        return $this;
     }
 
 }

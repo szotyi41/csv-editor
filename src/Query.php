@@ -6,127 +6,72 @@ abstract class Query {
     public $result;
     public $getfield;
     public $setfield;
-
-    private $wherefield;
-    private $wherevalue;
-    private $wheretype;
+    public $query;
 
 	public function __construct($data) {
-		$this->data = $data;
+        $this->data = $data;
+        $this->query = [];
 	}
 
-    public function where($field, $type, $value) {
-        $this->wherefield = $field;
-        $this->wheretype = $type;
-        $this->wherevalue = $value;
+    public function where(int $columnIndex, string $type, $value) {
+        $query = new stdClass();
+        $query->or = false;
+        $query->columnIndex = $columnIndex;
+        $query->type = $type;
+        $query->value = $value;
+        $this->query[] = $query;
+        return $this;
     }
 
-    public function getfield($field) {
+    public function orWhere(int $columnIndex, string $type, $value) {
+        $query = new stdClass();
+        $query->or = true;
+        $query->columnIndex = $columnIndex;
+        $query->type = $type;
+        $query->value = $value;
+        $this->query[] = $query;
+        return $this;
+    }
+
+    public function getColumn($field) {
         $this->getfield = $field;
+        return $this;
     }
 
-    public function setfield($field) {
+    public function setColumn($field) {
         $this->setfield = $field;
+        return $this;
     }
 
     public function exec($callback) {
-        switch($this->wheretype) {
-            case 'i':  $this->includes($callback); break;
-            case '!i': $this->notincludes($callback); break;
-            case 'e':  $this->equal($callback); break;
-            case '!e': $this->notequal($callback); break;
-            case '=':  $this->equalnumber($callback); break;
-            case '!=': $this->notequalnumber($callback); break;
-            case '>':  $this->largerthan($callback); break;
-            case '<':  $this->smallerthan($callback); break;
-            default :  $this->all($callback); break;
-        }
-    }
-
-    private function all($callback) {        
+        $count = 0;
         foreach ($this->data->getData() as $row) {
-            $row = $callback($row);
-            if(!empty($row)) $this->result[] = $row;
-        }
-    }
 
-    private function includes($callback) {        
-        foreach ($this->data->getData() as $row) {
-            if (strstr($row[$this->wherefield], $this->wherevalue) !== false) {
-                $row = $callback($row);
+            $condition = new Condition();
+
+            foreach ($this->query as $cond) {
+                $condition->{$cond->type}($cond->or, $row[$cond->columnIndex], $cond->value);
             }
-            if(!empty($row)) $this->result[] = $row;
+
+            if ($condition->get() === true) {
+                $row = $callback($row);
+                $count++;
+            }
+
+            if (!empty($row)) {
+                $this->result[] = $row;
+            }
         }
+
+        $this->logResults($count);
+
     }
 
-    private function notincludes($callback) {        
-        foreach ($this->data->getData() as $row) {
-            if (strstr($row[$this->wherefield], $this->wherevalue) === false) {
-                $row = $callback($row);
-            }
-            if(!empty($row)) $this->result[] = $row;
+    private function logResults($count) {
+        foreach ($this->query as $cond) {
+            echo  (($cond->or) ? ' Or ' : ' And ') . ' where ' . $this->data->header[$cond->columnIndex] . ' ' . $cond->type . ' ' . $cond->value . '<br>';
         }
-    }
 
-    private function equal($callback) {        
-        foreach ($this->data->getData() as $row) {
-            if ($row[$this->wherefield] === $this->wherevalue) {
-                $row = $callback($row);
-            }
-            if(!empty($row)) $this->result[] = $row;
-        }
-    }
-
-    private function notequal($callback) {        
-        foreach ($this->data->getData() as $row) {
-            if ($row[$this->wherefield] !== $this->wherevalue) {
-                $row = $callback($row);
-            }
-            if(!empty($row)) $this->result[] = $row;
-        }
-    }
-    
-    private function equalnumber($callback) {        
-        foreach ($this->data->getData() as $row) {
-            $number = $this->toNumber($row[$this->wherefield]);
-            if ($number === $this->wherevalue) {
-                $row = $callback($row);
-            }
-            if(!empty($row)) $this->result[] = $row;
-        }
-    }
-
-    private function notequalnumber($callback) {        
-        foreach ($this->data->getData() as $row) {
-            $number = $this->toNumber($row[$this->wherefield]);
-            if ($number !== $this->wherevalue) {
-                $row = $callback($row);
-            }
-            if(!empty($row)) $this->result[] = $row;
-        }
-    }
-
-    private function largerthan($callback) {        
-        foreach ($this->data->getData() as $row) {
-            $number = $this->toNumber($row[$this->wherefield]);
-            if ($number > $this->wherevalue) {
-                $row = $callback($row);
-            }
-            if(!empty($row)) $this->result[] = $row;
-        }
-    }
-
-    private function smallerthan($callback) {        
-        foreach ($this->data->getData() as $row) {
-            $number = $this->toNumber($row[$this->wherefield]);
-            if ($number < $this->wherevalue) {
-                $row = $callback($row);
-            }
-            if(!empty($row)) $this->result[] = $row;
-        }
-    }
-
-    private function toNumber($value) {
-        return (float) preg_replace('/[^0-9.]/', '', $value);
+        echo 'Touched rows: ' . $count . '<br><br>';
     }
 }

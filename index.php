@@ -2,68 +2,95 @@
 
 <?php
 
-require 'src/Query.php';
-require 'src/Data.php';
-require 'src/Replace.php';
-require 'src/Remove.php';
-require 'src/Duplicate.php';
-require 'src/Explode.php';
-require 'src/Math.php';
-require 'src/DateFormat.php';
+$start = microtime(true);
+
+require_once 'vendor/autoload.php';
 
 
-$data = new Data('adm_feed.csv');
-$data->import();
+$data = (new Data('adm_feed.csv'))->import();
 
-echo 'Rows: ' . $data->getCount();
+echo 'Started rows: ' . $data->getCount() . '<br>';
 
-$rep1 = new Replace($data);
-$rep1->getfield(2);
-$rep1->setfield(2);
-$rep1->replace('http', 'https');
+$rep1 = (new Replace($data))
 
-$times = new Math($data);
-$times->setfield(8);
-$times->format(0, ',', ' ');
-$times->suffix(' HUF');
-$times->calc('%s*1.27', [7]);
+    // Where the 4. column contains SANS text
+    ->where(4, 'contains', 'SANS')
 
-/*
-$rep1 = new Replace($data);
-$rep1->where(4, 'i', 'SANS');
-$rep1->getfield(4);
-$rep1->setfield(4);
-$rep1->replace('SANS', 'EXEC%s', [0]);
+    // Or the 2. column contains SANS text
+    ->orWhere(2, 'contains', 'SANS')
 
-$rep2 = new Replace($data);
-$rep2->setfield(9);
-$rep2->set('%s Üres %s', [1, 'csicska']);
+    // Get data from 2. column
+    ->getColumn(2)
 
-$remove = new Remove($data);
-$remove->where(4, 'i', 'ARTENGO');
-$remove->remove();
+    // Set the 2. column
+    ->setColumn(2)
 
-$duplicate = new Duplicate($data);
-$duplicate->where(4, 'e', 'KIPSTA');
-$duplicate->duplicate();
-
-$explode = new Explode($data);
-$explode->getfield(1);
-$explode->setfields([10,11,12]);
-$explode->explode(',');
-$data->setColumn(10, 'Exploded 1');
-$data->setColumn(11, 'Exploded 2');
-$data->setColumn(12, 'Exploded 3');
-
-$date = new DateFormat($data);
-$date->getfield(8);
-$date->setfield(13);
-$date->format('Y. m. d.');
-$date->date('+ 1 days');*/
+    // Run the replace
+    ->replace('http', 'https');
 
 
+$times = (new Math($data))
+    
+    ->where(0, 'largerThan', 8383162)
 
-echo 'Rows: ' . $data->getCount();
+    ->format(0, '.', '')
+    ->round(2)
+    ->suffix('.00 HUF')
 
+    // Set the 8. column
+    ->setColumn(8)
+
+    // Get data from 7. column, and times it 1.27
+    ->calc('%s*1.27', [7]);
+
+
+$rep2 = (new Replace($data))
+
+    ->getColumn(4)
+
+    ->where(4, 'contains', 'SANS')
+
+    ->setColumn(4)
+
+    ->replace('SANS', 'EXEC %s', [0]);
+
+
+$rep3 = (new Replace($data))
+
+    ->setColumn(9)
+
+    ->set('%s Üres %s', [1, 'csicska']);
+
+$remove = (new Remove($data))
+    ->where(4, 'equal', 'ARTENGO')
+
+    ->orWhere(4, 'equal', 'KIPSTA')
+
+    ->remove();
+
+
+$duplicate = (new Duplicate($data))
+    ->where(4, 'equal', 'WORKSHOP')
+    ->duplicate();
+
+
+$explode = (new Explode($data))
+    ->getColumn(1)
+    ->setColumns([10,11,12])
+    ->explode(',');
+
+$date = (new DateFormat($data))
+    ->getColumn(8)
+    ->setColumn(13)
+    ->format('Y. m. d.')
+    ->date('+ 1 days');
+
+
+echo 'Ended rows: ' . $data->getCount() . '<br>';
+
+$end = microtime(true);
+
+
+echo 'Runtime in microseconds: ' . ($end - $start) . '<br>';
 
 $data->table();

@@ -11,6 +11,8 @@ class Data
 	public function __construct($file)
 	{
 		$this->file = $file;
+
+		return $this;
 	}
 
 	public function import()
@@ -26,6 +28,8 @@ class Data
 			$data[] = $arr;
 		}
 		$this->data = $data;
+
+		return $this;
     }
 
     public function setColumn($id, $column) 
@@ -37,28 +41,6 @@ class Data
     {
         return count($this->data);
     }
-    
-    public function types($types) 
-    {
-        $this->types = $types;
-    }
-
-	public function getColumnIndex($field) 
-	{
-		foreach($this->header as $i => $column) {
-			if($column === $field) {
-				return $i;
-			}
-		}
-	}
-
-	public function getColumnName($field) {		
-		foreach($this->header as $i => $column) {
-			if($column === $field) {
-				return $column;
-			}
-		}
-	}
 
 	public function getData() 
 	{
@@ -74,8 +56,8 @@ class Data
 	{
 		echo '<table>';
 		echo '<tr>';
-		foreach($this->header as $column) {
-			echo '<th>'.$column.'</th>';
+		foreach($this->header as $i => $column) {
+			echo '<th>'.$column.' (' . $i . ')</th>';
 		}
 		echo '</tr>';
 		foreach($this->data as $rows) {
